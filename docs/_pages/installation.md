@@ -1,6 +1,6 @@
 ---
 permalink: /installation/
-title: "Installation and use"
+title: "INSTALLATION INSTRUCTIONS"
 
 sidebar:
   nav: "docs"
@@ -11,31 +11,49 @@ toc_icon: "cog"
 ---
 
 
+Robotics-Academy currently supports **Linux** operating system. These installation instructions have been prepared for Ubuntu Linux 18.04 (LTS). Don't install everything listed here, just follow the directions on the Academy exercise you want to perform. For instance, not all the specific infrastructure packages are required for every exercise, and they can be large packages.
 
-Robotics-Academy currently supports Linux and Windows operating systems (using docker). Below are the steps for installing the software.
+1. *Generic infrastucture*
+    - Required
+    - ROS middleware, Gazebo simulator, JdeRobot-base, JdeRobot-assets
 
-## Ubuntu/Debian
+2. *Specific infrastructure*
+    - Optional, depends on the exercise
+    - Some exercises require also additional software pieces such as OpenCV, MoveIt!, MavROS, PX4, VisualStates, OpenMotionPlanningLibrary, etc.
 
-The programming environment is composed of the (a) Gazebo simulator, (b) ROS middleware and (c) the Academy package. All this software is open source so there are alternative ways to install all of them directly from the source code. Currently we use Gazebo-7.4.0, ROS Kinetic and JdeRobot-Academy (2018-06-06) releases.
+3. *JdeRobot Academy source code*
+    - Required
+    - Academy includes templates for the exercises
 
-### Installation
+## Generic infrastructure
 
-Follow the next steps to have the environment up and running, ready to use.
+## ROS Middleware
 
-1. Install ROS framework.
+Supported release is ROS-Melodic. It can be easily installed from official Debian packages, maintained by OpenRobotics organization.
 
-    Add the lastest ROS sources:
+1. Add the lastest ROS source:
 
     ```bash
     sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
     ```
+
     ```bash
-    sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+ sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+    ```
+<!-- sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116 -->
+
+2. Install the official ROS Melodic Debian package
+
+    ```bash
+    sudo apt install ros-melodic-desktop-full
     ```
 
-2. Gazebo sources.
+## Gazebo simulator
 
-    Add the lastest Gazebo sources:
+Supported release is Gazebo-9. It can be easily installed from official Debian packages, maintained by OpenRobotics organization. You can safely ignore this step as Gazebo-9 will be automatically installed with ROS Melodic package (described in the [previous step](/RoboticsAcademy/installation/#ros-middleware)).
+
+<!--
+1. Add the lastest Gazebo source:
 
     ```bash
     sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable lsb_release -cs main" > /etc/apt/sources.list.d/gazebo-stable.list'
@@ -45,31 +63,203 @@ Follow the next steps to have the environment up and running, ready to use.
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key 67170598AF249743
     ```
 
-3. Install the packages.
-
-    Install the following packages:
+2. Install the official Gazebo package:
 
     ```bash
-    sudo apt-get install ros-kinetic-desktop-full
-    sudo apt-get install gazebo7
-    sudo apt install jderobot-gazebo-assets
+    sudo apt install gazebo9
+    ```
+-->
+
+## JdeRobot-base
+
+Supported release is 6.0.0.
+It contains ROS drivers not included in the official ROS packages.
+
+1. Add the latest JdeRobot-base source
+
+    ```bash
+    sudo sh -c 'echo "deb [arch=amd64] http://wiki.jderobot.org/apt `lsb_release -cs` main" > /etc/apt/sources.list.d/jderobot.list'
     ```
 
-4. Install the JdeRobot-Academy software
+2. Get and add the public key from the JdeRobot repository
 
-    Once you have JdeRobot installed in your system, you can download and install the Academy software. To do so, you must:
+    ```bash
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 24E521A4
+    ```
+
+3. Update the repositories
+
+    ```bash
+    sudo apt update
+    ```
+
+4. Install JdeRobot-base
+
+    ```bash
+    sudo apt install jderobot
+    ```
+
+## JdeRobot-assets
+
+Supported release is 6.0.2
+It contains Gazebo world files and configuration files required for the Academy exercises.
+
+1. Install jderobot-assets debian package
+
+    ```bash
+    sudo apt install jderobot-assets
+    ```
+
+2. Install jderobot-assets ROS package
+
+    ```bash
+    sudo apt install ros-melodic-jderobot-assets
+    ```
+
+
+## Specific infrastructure
+
+## OpenCV
+
+You can install OpenCV in several ways:
+
+- Installing from the [PyPi repository](https://pypi.org/project/opencv-python/).
+- Compiling it from its [source code](https://docs.opencv.org/3.4.1/d2/de6/tutorial_py_setup_in_ubuntu.html).
+
+For more information, visit the [official repository](https://github.com/opencv/opencv).
+
+## MavROS
+
+1. Install ROS Melodic, MAVROS and extras
+
+    ```bash
+    sudo apt install ros-melodic-mavros ros-melodic-mavros-extras
+    ```
+
+
+## PX4
+
+Install previous dependencies:
+
+1. Download and install GeographicLib
+
+    ```bash
+    wget https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/install_geographiclib_datasets.sh
+    ./install_geographiclib_datasets.sh
+    ```
+
+2. Remove modemmanager
+
+    ```bash
+    sudo apt remove modemmanager
+    ```
+
+3. Install common dependencies
+
+    ```bash
+    sudo apt update -y
+    sudo apt install git zip qtcreator cmake \
+        build-essential genromfs ninja-build exiftool -y
+    ```
+
+4. Install xxd
+
+    ```bash
+    which xxd || sudo apt install xxd -y || sudo apt install vim-common --no-install-recommends -y
+    ```
+
+5. Install required python packages
+
+    ```bash
+    sudo apt install python-argparse \
+        python-empy python-toml python-numpy python-yaml \
+        python-dev python-pip -y
+    sudo -H pip install --upgrade pip
+    sudo -H pip install pandas jinja2 pyserial cerberus
+    sudo -H pip install pyulog
+    ```
+
+6. Install ninja
+
+    ```bash
+    sudo apt install ninja-build -y
+    ```
+
+7. Get FastRTPS and FastCDR
+
+    ```bash
+    wget https://www.eprosima.com/index.php/component/ars/repository/eprosima-fast-rtps/eprosima-fast-rtps-1-7-1/eprosima_fastrtps-1-7-1-linux-tar-gz -O eprosima_fastrtps-1-7-1-linux.tar.gz
+    tar -xzf eprosima_fastrtps-1-7-1-linux.tar.gz eProsima_FastRTPS-1.7.1-Linux/
+    tar -xzf eprosima_fastrtps-1-7-1-linux.tar.gz requiredcomponents
+    tar -xzf requiredcomponents/eProsima_FastCDR-1.0.8-Linux.tar.gz
+    ```
+
+8. Build FastRTPS and FastCDR
+
+    ```bash
+    (cd eProsima_FastCDR-1.0.8-Linux && ./configure --libdir=/usr/lib && make -j2 && sudo make install)
+    (cd eProsima_FastRTPS-1.7.1-Linux && ./configure --libdir=/usr/lib && make -j2 && sudo make install)
+    rm -rf requiredcomponents eprosima_fastrtps-1-7-1-linux.tar.gz
+    ```
+
+9. Install catkin tools
+
+    ```bash
+    sudo apt install python-catkin-tools
+    ```
+
+10. Set up catkin workspace
+
+    ```bash
+    mkdir -p catkin_ws/src
+    cd catkin_ws/src
+    git clone https://github.com/PX4/Firmware.git
+    cd Firmware
+    git submodule update --init --recursive
+    cd ..
+    ln -s Firmware/Tools/sitl_gazebo mavlink_sitl_gazebo
+    cd ..
+    ```
+
+11. Update ROS dependencies
+
+    ```bash
+    rosdep update
+    rosdep check --from-paths . --ignore-src --rosdistro melodic
+    rosdep install --from-paths . --ignore-src --rosdistro melodic -y
+    ```
+
+12. Build catkin (make sure to be at /catkin_ws)
+
+    ```bash
+    catkin build
+    ```
+
+13. Export environment variables
+
+    ```bash
+    echo 'source '$PWD'/devel/setup.bash' >> ~/.bashrc
+    echo 'export GAZEBO_RESOURCE_PATH=${GAZEBO_RESOURCE_PATH}:/usr/share/gazebo-9' >> ~/.bashrc
+    echo 'export GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:/opt/ros/melodic/share/jderobot_assets/models' >> ~/.bashrc
+
+    source ~/.bashrc
+    ```
+
+## MoveIt!
+
+## Academy source code
+
+Once you have generic and specific infrastructure installed in your system, you can download and install the JdeRobot Academy software.
+
+1. Clone the Academy software repository
 
     ```bash
     git clone https://github.com/JdeRobot/Academy.git
     ```
 
-### Run Exercises
-On the directory of each exercise you will find particular directions to launch the simulated scenario and the academic node where you should write your code. 
+<!---
 
-Take a look at the [list of exercises](/exercises).
-
-
-## Windows(x64)
+# Installation on Windows(x64)  DEPRECATED
 
 The programming environment is composed of the (a) Docker with Gazebo simulator, (b) JdeRobot middleware for Python and (c) the TeachingRobotics package. All this software is open source so there are alternative ways to install all of them directly from the source code. Currently we use Gazebo-7.4.0, JdeRobot-5.4.1 and TeachingRobotics-0.1.0 releases. JdeRobot Docker includes the Gazebo plugins, models and configuration files to simulate the robot used in the exercises.
 
@@ -148,4 +338,5 @@ python [practice_file][config_file]
 
 You can watch a video demonstration.
 
-{% include video id="v00TCr-aSWM" provider="youtube" %}
+
+--->
